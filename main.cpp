@@ -1,3 +1,4 @@
+#include <iostream>
 #include "gra.hpp"
 #include "ai.hpp"
 

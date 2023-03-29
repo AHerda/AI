@@ -1,9 +1,13 @@
 #include <fstream>
+#include "gra.hpp"
 
 class AI {
     private:
 
+    Gra gra;
+
     public:
-    //AI();
+
+    AI(Gra* gra);
     //ĄI();
 };

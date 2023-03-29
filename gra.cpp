@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Gra::Gra(int size) {
+Gra::Gra(int size = 3) {
     this->size = size;
     for(int i = 0; i < size; i++) {
         vector<int> temp;
@@ -81,6 +81,10 @@ void Gra::print_table() {
         cout << "|\n";
         cout << "-----------------------------\n";
     }
+}
+
+int Gra::get(int x, int y) {
+    return plane[x][y];
 }
 
 int Gra::get_size() {
