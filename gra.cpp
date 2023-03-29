@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <random>
 #include "gra.hpp"
 
 using namespace std;
@@ -19,39 +20,82 @@ Gra::~Gra() {
     plane.~vector();
 }
 
-void Gra::move(char ch) {
+void Gra::rand_start() {
+
+}
+
+void Gra::rand_start_ez(int n) {
+    srand(n);
+    for(int x = 0; x < size; x++) {
+        for(int y = 0; y < size; y++) {
+            plane[x][y] = (x * 4 + y + 1) % 16;
+        }
+    }
+    x = size - 1;
+    y = size - 1;
+
+    for(int i = 0; i < n; i++) {
+        int r = rand() % 4;
+        bool check;
+        switch (r) {
+            case 0:
+                check = move('w');
+                break;
+            case 1:
+                check = move('s');
+                break;
+            case 2:
+                check = move('a');
+                break;
+            case 3:
+                check = move('d');
+                break;
+            default:
+                check = false;
+        }
+
+        if(!check)
+            i--;
+    }
+}
+
+bool Gra::move(char ch) {
     switch (ch)
     {
     case 'w':
+    case 'W':
         if(y == 0)
-            break;
+            return false;
         plane[x][y] = plane[x][y - 1];
         plane[x][y - 1] = 0;
         y--;
-        break;
+        return true;
     case 's':
+    case 'S':
         if(y == size - 1)
-            break;
+            return false;
         plane[x][y] = plane[x][y + 1];
         plane[x][y + 1] = 0;
         y++;
-        break;
+        return true;
     case 'a':
+    case 'A':
         if(x == 0)
-            break;
+            return false;
         plane[x][y] = plane[x - 1][y];
         plane[x - 1][y] = 0;
         x--;
-        break;
+        return true;
     case 'd':
+    case 'D':
         if(x == size - 1)
-            break;
+            return false;
         plane[x][y] = plane[x + 1][y];
         plane[x + 1][y] = 0;
         x++;
-        break;
+        return true;
     default:
-        break;
+        return false;
     }
 }
 

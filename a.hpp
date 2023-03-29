@@ -4,15 +4,15 @@
 #include <fstream>
 #include "gra.hpp"
 
-class AI {
+class A {
     private:
 
     Gra gra;
+    vector<vector<int>> test;
 
     public:
 
-    AI(Gra* gra);
-    //ĄI();
+    A(Gra* gra);
 };
 
 #endif
