@@ -25,16 +25,18 @@ void Gra::rand_start() {
 }
 
 void Gra::rand_start_ez(int n) {
-    srand(n);
+    srand(time(NULL));
     for(int x = 0; x < size; x++) {
         for(int y = 0; y < size; y++) {
-            plane[x][y] = (x * 4 + y + 1) % 16;
+            plane[x][y] = (x * size + y + 1) % (size * size);
         }
     }
+    print_table();
     x = size - 1;
     y = size - 1;
 
-    for(int i = 0; i < n; i++) {
+    int i = 0;
+    while(i != 100) {
         int r = rand() % 4;
         bool check;
         switch (r) {
@@ -54,8 +56,8 @@ void Gra::rand_start_ez(int n) {
                 check = false;
         }
 
-        if(!check)
-            i--;
+        if(check)
+            i++;
     }
 }
 
@@ -64,35 +66,39 @@ bool Gra::move(char ch) {
     {
     case 'w':
     case 'W':
-        if(y == 0)
-            return false;
-        plane[x][y] = plane[x][y - 1];
-        plane[x][y - 1] = 0;
-        y--;
-        return true;
-    case 's':
-    case 'S':
-        if(y == size - 1)
-            return false;
-        plane[x][y] = plane[x][y + 1];
-        plane[x][y + 1] = 0;
-        y++;
-        return true;
-    case 'a':
-    case 'A':
         if(x == 0)
             return false;
         plane[x][y] = plane[x - 1][y];
         plane[x - 1][y] = 0;
         x--;
+        cout << x << " " << y << endl;
         return true;
-    case 'd':
-    case 'D':
+    case 's':
+    case 'S':
         if(x == size - 1)
             return false;
         plane[x][y] = plane[x + 1][y];
         plane[x + 1][y] = 0;
         x++;
+        cout << x << " " << y << endl;
+        return true;
+    case 'a':
+    case 'A':
+        if(y == 0)
+            return false;
+        plane[x][y] = plane[x - 1][y - 1];
+        plane[x][y - 1] = 0;
+        y--;
+        cout << x << " " << y << endl;
+        return true;
+    case 'd':
+    case 'D':
+        if(y == size - 1)
+            return false;
+        plane[x][y] = plane[x][y + 1];
+        plane[x][y + 1] = 0;
+        y++;
+        cout << x << " " << y << endl;
         return true;
     default:
         return false;
@@ -118,9 +124,9 @@ bool Gra::check_win() {
 
 void Gra::print_table() {
     cout << "-----------------------------\n";
-    for(vector<int> v : plane) {
-        for(int val : v) {
-            cout << "| " << val << " ";
+    for(int x = 0; x < size; x++) {
+        for(int y = 0; y < size; y++) {
+            cout << "| " << plane[x][y] << " ";
         }
         cout << "|\n";
         cout << "-----------------------------\n";
@@ -132,9 +138,9 @@ int Gra::get(int x, int y) {
 }
 
 int Gra::get_size() {
-    return this->size;
+    return size;
 }
 
 int Gra::get_xy() {
-    return (this->x) * 4 + (this->y);
+    return x * 4 + y;
 }
