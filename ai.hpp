@@ -1,3 +1,6 @@
+#ifndef ai_hpp
+#define ai_hpp
+
 #include <fstream>
 #include "gra.hpp"
 
@@ -11,3 +14,5 @@ class AI {
     AI(Gra* gra);
     //ĄI();
 };
+
+#endif

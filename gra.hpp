@@ -1,3 +1,6 @@
+#ifndef gra_hpp
+#define gra_hpp
+
 #include <vector>
 
 using namespace std;
@@ -20,3 +23,5 @@ class Gra {
     int get(int x, int y);
     void print_table();
 };
+
+#endif

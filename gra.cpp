@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Gra::Gra(int size = 3) {
+Gra::Gra(int size) {
     this->size = size;
     for(int i = 0; i < size; i++) {
         vector<int> temp;

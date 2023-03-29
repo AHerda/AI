@@ -3,7 +3,7 @@
 #include "ai.hpp"
 
 int main(int argc, char** argv) {
-    Gra gra(3);
+    Gra gra(5);
     gra.print_table();
 
     return 0;
