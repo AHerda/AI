@@ -31,7 +31,6 @@ void Gra::rand_start_ez(int n) {
             plane[x][y] = (x * size + y + 1) % (size * size);
         }
     }
-    print_table();
     x = size - 1;
     y = size - 1;
 
@@ -39,70 +38,65 @@ void Gra::rand_start_ez(int n) {
     while(i != 100) {
         int r = rand() % 4;
         bool check;
-        switch (r) {
-            case 0:
-                check = move('w');
-                break;
-            case 1:
-                check = move('s');
-                break;
-            case 2:
-                check = move('a');
-                break;
-            case 3:
-                check = move('d');
-                break;
-            default:
-                check = false;
-        }
+        check = move(r);
 
         if(check)
             i++;
     }
 }
 
-bool Gra::move(char ch) {
-    switch (ch)
+bool Gra::move(int r) {
+    switch (r)
     {
-    case 'w':
-    case 'W':
+    case 0:
         if(x == 0)
             return false;
         plane[x][y] = plane[x - 1][y];
         plane[x - 1][y] = 0;
         x--;
-        cout << x << " " << y << endl;
         return true;
-    case 's':
-    case 'S':
+    case 1:
         if(x == size - 1)
             return false;
         plane[x][y] = plane[x + 1][y];
         plane[x + 1][y] = 0;
         x++;
-        cout << x << " " << y << endl;
         return true;
-    case 'a':
-    case 'A':
+    case 2:
         if(y == 0)
             return false;
-        plane[x][y] = plane[x - 1][y - 1];
+        plane[x][y] = plane[x][y - 1];
         plane[x][y - 1] = 0;
         y--;
-        cout << x << " " << y << endl;
         return true;
-    case 'd':
-    case 'D':
+    case 3:
         if(y == size - 1)
             return false;
         plane[x][y] = plane[x][y + 1];
         plane[x][y + 1] = 0;
         y++;
-        cout << x << " " << y << endl;
         return true;
     default:
         return false;
     }
+}
+
+int translator(char ch) {
+    switch (ch) {
+        case 'w':
+        case 'W':
+            return 0;
+        case 's':
+        case 'S':
+            return 1;
+        case 'a':
+        case 'A':
+            return 2;
+        case 'd':
+        case 'D':
+            return 3;
+    }
+    return -1;
 }
 
 bool Gra::check_win() {

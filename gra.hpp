@@ -18,7 +18,8 @@ class Gra {
     ~Gra();
     void rand_start();
     void rand_start_ez(int n = 100);
-    bool move(char ch);
+    bool move(int r);
+    int translator(char ch);
     bool check_win();
     int get_size();
     int get_xy();
