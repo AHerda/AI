@@ -26,6 +26,7 @@ class Gra {
     int get_size();
     int get_xy();
     int get(int x, int y);
+    vector<vector<int>> get_board();
     void print_table();
 
     vector<int> to_1d();

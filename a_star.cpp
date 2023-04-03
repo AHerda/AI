@@ -8,6 +8,7 @@ using namespace std;
 
 A_star::A_star(Gra& gra, int heurestic) {
     this->gra = gra;
+    this->test = gra.get_board();
     this->heurestic = heurestic;
     for(int x = 0; x < gra.get_size(); x++) {
         for(int y = 0; y < gra.get_size(); y++) {
@@ -33,8 +34,21 @@ int A_star::total_manhattan() {
 
 void A_star::A_star_search(const vector<vector<int>> board) {
     unordered_map<vector<int>, bool> visited;
+    vector<Node*> to_visit;
 
     Node start(gra.to_1d(), NONE, nullptr);
 }
 
-void get_neighbors()
+void get_neighbors() {
+    if(test)
+}
+
+int A_star::get_blank(vector<vector<int>> board) {
+    for (int x = 0; x < gra.get_size(); x++) {
+        for (int y = 0; y < gra.get_size(); y++) {
+            if(board[x][y] == 0) {
+                return x * gra.get_size() + y;
+            }
+        }
+    }
+}

@@ -200,3 +200,14 @@ vector<int> Gra::to_1d() {
     }
     return result;
 }
+
+vector<vector<int>> Gra::get_board() {
+    vector<vector<int>> result;
+    result.assign(size, vector<int>());
+    for(int x = 0; x < size; x++) {
+        for(int y = 0; y < size; y++) {
+            result[x].push_back(board[x][y]);
+        }
+    }
+    return result;
+}

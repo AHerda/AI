@@ -51,6 +51,7 @@ class A_star {
     A_star(Gra& gra, int heurestic = 0);
     int manhattan_dist(int x1, int y1, int x2, int y2);
     int total_manhattan();
+    int get_blank(vector<vector<int>> board);
 
     void A_star_search(const vector<vector<int>> board);
 };
