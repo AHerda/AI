@@ -1,12 +1,11 @@
 #include <iostream>
 #include "gra.hpp"
-#include "a.hpp"
+#include "a_star.hpp"
 
 int main(int argc, char** argv) {
     Gra gra(4);
-    gra.rand_start_ez(1000);
+    gra.rand_start();
     gra.print_table();
-    gra.~Gra();
 
     return 0;
 }
