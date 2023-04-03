@@ -1,8 +1,8 @@
-#include <unordered_map>
+#include <iostream>
+#include <set>
 #include <vector>
 #include <limits>
 #include "a_star.hpp"
-#include "gra.hpp"
 
 using namespace std;
 
@@ -21,12 +21,12 @@ int A_star::manhattan_dist(int x1, int y1, int x2, int y2) {
     return abs(x2 - x1) + abs(y2 - y1);
 }
 
-int A_star::total_manhattan() {
+int A_star::total_manhattan(vector<vector<int>> board) {
     int total = 0;
-    for (int x = 0; x < gra.get_size(); x++) {
-        for (int y = 0; y < gra.get_size(); y++) {
-            int value = (gra.get(x, y) + 15) % 16;
-            total += manhattan_dist(x, y, value / gra.get_size(), value % gra.get_size());
+    for (int x = 0; x < board.size(); x++) {
+        for (int y = 0; y < board.size(); y++) {
+            int value = board[x][y];
+            total += manhattan_dist(x, y, (value - 1) / board.size(), (value - 1) % board.size());
         }
     }
     return total;
@@ -44,16 +44,16 @@ int A_star::total_manhattan_1d(vector<int> board) {
     return total;
 }
 
-int A_star::heurestic1(vector<Node*>& to_visit) {
+int A_star::heurestic1(vector<Node> to_visit) {
     int i = 0;
     int result = 0;
     int smallest_cost = std::numeric_limits<int>::max();
-    for(Node* node : to_visit) {
-        if(node->cost < smallest_cost) {
-            int dist = total_manhattan_1d(node->state);
+    for(Node node : to_visit) {
+        if(node.cost < smallest_cost) {
+            int dist = total_manhattan(node.state_2d);
 
-            if(dist + node->cost < smallest_cost) {
-                smallest_cost = dist + node->cost;
+            if(dist + node.cost < smallest_cost) {
+                smallest_cost = dist + node.cost;
                 result = i;
             }
         }
@@ -64,16 +64,16 @@ int A_star::heurestic1(vector<Node*>& to_visit) {
     return result;
 }
 
-void A_star::A_star_search(const vector<vector<int>> board) {
-    unordered_map<vector<int>, bool> visited;
-    vector<Node*> to_visit;
+void A_star::A_star_search() {
+    set<string> visited;
+    vector<Node> to_visit;
 
-    Node* start = new Node(gra.to_1d(), NONE, nullptr);
+    Node start(gra.to_1d(), NONE, nullptr);
 
-    visited.insert(pair<vector<int>, bool>(start->state, true));
+    visited.insert(start.state_to_string());
     to_visit.push_back(start);
 
-    Node* current = to_visit.front();
+    Node current = to_visit.front();
 
     while(true) {
         int i;
@@ -83,41 +83,56 @@ void A_star::A_star_search(const vector<vector<int>> board) {
 
         current = to_visit[i];
 
-        vector<Node*> component;
+        vector<Node> component;
 
         get_neighbors(current, component);
-        for(Node* node : component) {
-            to_visit.push_back(node);
+        for(Node node : component) {
+            auto i = visited.find(node.state_to_string());
+            if(i != visited.end()) {
+                to_visit.push_back(node);
+                visited.insert(node.state_to_string());
+            }
         }
 
-        if(current->check_win(gra))
+        if(current.check_win())
             break;
 
         to_visit.erase(to_visit.begin() + i);
+
+        if(to_visit.size() == 0) {
+            return;
+        }
     }
 
-    vector<int> path;
-    while(current->parent)
+    while(current.parent) {
+        path.push_back(current.move);
+        current = *(current.parent);
+    }
 }
 
-void A_star::get_neighbors(Node* node, vector<Node*>& component) {
+void A_star::execute() {
+    for(int i = path.size() - 1; i >= 0; i++) {
+        gra.move(path[i]);
+    }
+}
+
+void A_star::get_neighbors(Node node, vector<Node>& component) {
     int x, y;
-    int temp = get_blank(node->state_2d);
+    int temp = get_blank(node.state_2d);
     x = temp / 4;
     y = temp % 4;
 
-    Node* temp2;
     if(x != 0) {
-        component.push_back(node->move(UP, x, y));
+        component.push_back(*(node.do_move(UP, x, y)));
     }
     if(x != gra.get_size()) {
-        component.push_back(node->move(DOWN, x, y));
+        component.push_back(*(node.do_move(DOWN, x, y)));
     }
     if(y != 0) {
-        component.push_back(node->move(LEFT, x, y));
+        component.push_back(*(node.do_move(LEFT, x, y)));
     }
     if(y != gra.get_size()) {
-        component.push_back(node->move(RIGHT, x, y));
+        component.push_back(*(node.do_move(RIGHT, x, y)));
     }
 }
 

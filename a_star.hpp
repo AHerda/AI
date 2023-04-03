@@ -1,17 +1,12 @@
 #ifndef a_star_hpp
 #define a_star_hpp
 
-#include <fstream>
 #include <vector>
+#include <string>
 #include "gra.hpp"
+#include "dir.hpp"
 
-enum Dir {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    NONE
-};
+using namespace std;
 
 class Node {
     public:
@@ -37,14 +32,14 @@ class Node {
         this->parent = parent;
         this->cost = parent->cost + 1;
 
+        vector<int> temp(state_2d.size());
         to_1d();
     }
 
     void to_1d() {
-        int i = 0;
-        for (int x = 0; x * x < state.size(); x++) {
-            for (int y = 0; y * y < state.size(); y++) {
-                state.push_back(state_2d[x][y]);
+        for (int x = 0; x * x < state_2d.size(); x++) {
+            for (int y = 0; y * y < state_2d.size(); y++) {
+                state[x * state_2d.size() + y] = state_2d[x][y];
             }
         }
     }
@@ -52,26 +47,38 @@ class Node {
     void to_2d() {
         int i = 0;
         for (int x = 0; x * x < state.size(); x++) {
-            state_2d.push_back(vector<int>());
-            for (int y = 0; y * y < state.size(); y++) {
-                state_2d[x].push_back(state[x * i]);
-                i++;
+            i = x;
+        }
+        vector<vector<int>> temp(i, vector<int>(i));
+        state_2d = temp;
+        for (int x = 0; x < i; x++) {
+            for (int y = 0; y < i; y++) {
+                state_2d[x][y] = state[x * i + y];
             }
         }
     }
 
-    bool check_win(Gra &gra) {
-        return gra.check_win();
+    string state_to_string() {
+        string result;
+        for(size_t i = 0; i < state.size(); i++) {
+            result += to_string(state[i]);
+            if(i + 1 != state.size()) {
+                result += " ";
+            }
+        }
+        return result;
     }
 
-    bool is_visited(unordered_map<vector<int>, bool> &map) {
-        auto temp = map.find(state);
-        if(temp == map.end()) return false;
+    bool check_win() {
+        int counter = 0;
 
-        return true;
+        for(size_t i = 0; i < state.size(); i++) {
+            if(state[i] == (i + 1) % state.size()) counter++;
+        }
+        return counter == state.size();
     }
 
-    Node* move(Dir dir, int x, int y) {
+    Node* do_move(Dir dir, int x, int y) {
         vector<vector<int>> temp = state_2d;
         if(dir == UP && x != 0) {
             temp[x][y] = temp[x - 1][y];
@@ -117,20 +124,22 @@ class A_star {
     Gra gra;
     vector<vector<int>> test;
     int heurestic;
+    vector<Dir> path;
 
     public:
 
-    A_star(Gra &gra, int heurestic = 0);
+    A_star(Gra& gra, int heurestic = 0);
     int manhattan_dist(int x1, int y1, int x2, int y2);
-    int total_manhattan();
+    int total_manhattan(vector<vector<int>> board);
     int total_manhattan_1d(vector<int> board);
     int get_blank(vector<vector<int>> board);
-    void get_neighbors(Node* node, vector<Node*>& component);
+    void get_neighbors(Node node, vector<Node>& component);
     
 
-    void A_star_search(const vector<vector<int>> board);
+    void A_star_search();
+    void execute();
 
-    int heurestic1(vector<Node*>& to_visit);
+    int heurestic1(vector<Node> to_visit);
 };
 
 #endif

@@ -8,11 +8,7 @@ using namespace std;
 
 Gra::Gra(int size) {
     this->size = size;
-    for(int i = 0; i < size; i++) {
-        vector<int> temp;
-        temp.assign(size, 0);
-        board.push_back(temp);
-    }
+    board = vector<vector<int>>(size, vector<int>(size));
 }
 
 void Gra::rand_start_ez(int n) {
@@ -117,9 +113,17 @@ bool Gra::move(Dir d) {
             board[x][y + 1] = 0;
             y++;
             return true;
-        default:
-            return false;
+        case NONE:
+            bool check = check_win();
+            if(check) {
+                cout << "Wygrana!!!";
+            }
+            else {
+                cout << "Może następnym razem :((";
+            }
+            return true;
     }
+    return false;
 }
 
 Dir Gra::translator_char(char ch) {
@@ -202,11 +206,10 @@ vector<int> Gra::to_1d() {
 }
 
 vector<vector<int>> Gra::get_board() {
-    vector<vector<int>> result;
-    result.assign(size, vector<int>());
+    vector<vector<int>> result(size, vector<int>(size));
     for(int x = 0; x < size; x++) {
         for(int y = 0; y < size; y++) {
-            result[x].push_back(board[x][y]);
+            result[x][y] = board[x][y];
         }
     }
     return result;

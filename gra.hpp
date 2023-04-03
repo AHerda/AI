@@ -2,7 +2,7 @@
 #define gra_hpp
 
 #include <vector>
-#include "a_star.hpp"
+#include "dir.hpp"
 
 using namespace std;
 
