@@ -44,16 +44,16 @@ int A_star::total_manhattan_1d(vector<int> board) {
     return total;
 }
 
-int A_star::heurestic1(vector<Node>& to_visit) {
+int A_star::heurestic1(vector<Node*>& to_visit) {
     int i = 0;
     int result = 0;
     int smallest_cost = std::numeric_limits<int>::max();
-    for(Node& node : to_visit) {
-        if(node.cost < smallest_cost) {
-            int dist = total_manhattan_1d(node.state);
+    for(Node* node : to_visit) {
+        if(node->cost < smallest_cost) {
+            int dist = total_manhattan_1d(node->state);
 
-            if(dist + node.cost < smallest_cost) {
-                smallest_cost = dist + node.cost;
+            if(dist + node->cost < smallest_cost) {
+                smallest_cost = dist + node->cost;
                 result = i;
             }
         }
@@ -66,14 +66,14 @@ int A_star::heurestic1(vector<Node>& to_visit) {
 
 void A_star::A_star_search(const vector<vector<int>> board) {
     unordered_map<vector<int>, bool> visited;
-    vector<Node> to_visit;
+    vector<Node*> to_visit;
 
-    Node start(gra.to_1d(), NONE, nullptr);
+    Node* start = new Node(gra.to_1d(), NONE, nullptr);
 
-    visited.insert(pair<vector<int>, bool>(start.state, true));
+    visited.insert(pair<vector<int>, bool>(start->state, true));
     to_visit.push_back(start);
 
-    Node current = to_visit.front();
+    Node* current = to_visit.front();
 
     while(true) {
         int i;
@@ -81,13 +81,43 @@ void A_star::A_star_search(const vector<vector<int>> board) {
             i = heurestic1(to_visit);
         }
 
-        
+        current = to_visit[i];
+
+        vector<Node*> component;
+
+        get_neighbors(current, component);
+        for(Node* node : component) {
+            to_visit.push_back(node);
+        }
+
+        if(current->check_win(gra))
+            break;
+
+        to_visit.erase(to_visit.begin() + i);
     }
+
+    vector<int> path;
+    while(current->parent)
 }
 
-void A_star::get_neighbors(Node node) {
-    if(get_blank(test) / 4 != 0) {
-        
+void A_star::get_neighbors(Node* node, vector<Node*>& component) {
+    int x, y;
+    int temp = get_blank(node->state_2d);
+    x = temp / 4;
+    y = temp % 4;
+
+    Node* temp2;
+    if(x != 0) {
+        component.push_back(node->move(UP, x, y));
+    }
+    if(x != gra.get_size()) {
+        component.push_back(node->move(DOWN, x, y));
+    }
+    if(y != 0) {
+        component.push_back(node->move(LEFT, x, y));
+    }
+    if(y != gra.get_size()) {
+        component.push_back(node->move(RIGHT, x, y));
     }
 }
 

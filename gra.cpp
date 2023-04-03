@@ -89,28 +89,28 @@ bool Gra::solvable(vector<int> tab) {
 
 bool Gra::move(Dir d) {
     switch (d) {
-        case 0:
+        case UP:
             if(x == 0)
                 return false;
             board[x][y] = board[x - 1][y];
             board[x - 1][y] = 0;
             x--;
             return true;
-        case 1:
+        case DOWN:
             if(x == size - 1)
                 return false;
             board[x][y] = board[x + 1][y];
             board[x + 1][y] = 0;
             x++;
             return true;
-        case 2:
+        case LEFT:
             if(y == 0)
                 return false;
             board[x][y] = board[x][y - 1];
             board[x][y - 1] = 0;
             y--;
             return true;
-        case 3:
+        case RIGHT:
             if(y == size - 1)
                 return false;
             board[x][y] = board[x][y + 1];
