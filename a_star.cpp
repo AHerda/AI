@@ -44,16 +44,16 @@ int A_star::total_manhattan_1d(vector<int> board) {
     return total;
 }
 
-int A_star::heurestic1(vector<Node> to_visit) {
+int A_star::heurestic1(vector<Node*> to_visit) {
     int i = 0;
     int result = 0;
     int smallest_cost = std::numeric_limits<int>::max();
-    for(Node node : to_visit) {
-        if(node.cost < smallest_cost) {
-            int dist = total_manhattan(node.state_2d);
+    for(Node* node : to_visit) {
+        if(node->cost < smallest_cost) {
+            int dist = total_manhattan(node->state_2d);
 
-            if(dist + node.cost < smallest_cost) {
-                smallest_cost = dist + node.cost;
+            if(dist + node->cost < smallest_cost) {
+                smallest_cost = dist + node->cost;
                 result = i;
             }
         }
@@ -66,35 +66,35 @@ int A_star::heurestic1(vector<Node> to_visit) {
 
 void A_star::A_star_search() {
     set<string> visited;
-    vector<Node> to_visit;
+    vector<Node*> to_visit;
 
-    Node start(gra.to_1d(), NONE, nullptr);
+    Node* start = new Node(gra.to_1d(), NONE, nullptr);
 
-    visited.insert(start.state_to_string());
+    visited.insert(start->state_to_string());
     to_visit.push_back(start);
 
-    Node current = to_visit.front();
+    Node* current = to_visit.front();
 
+    cout << "przed whilem";
     while(true) {
         int i;
-        if(heurestic == 0) {
-            i = heurestic1(to_visit);
-        }
+        i = heurestic1(to_visit);
 
         current = to_visit[i];
 
-        vector<Node> component;
+        vector<Node*> component;
 
         get_neighbors(current, component);
-        for(Node node : component) {
-            auto i = visited.find(node.state_to_string());
+
+        for(Node* node : component) {
+            const auto i = visited.find(node->state_to_string());
             if(i != visited.end()) {
                 to_visit.push_back(node);
-                visited.insert(node.state_to_string());
+                visited.insert(node->state_to_string());
             }
         }
 
-        if(current.check_win())
+        if(current->check_win())
             break;
 
         to_visit.erase(to_visit.begin() + i);
@@ -104,9 +104,9 @@ void A_star::A_star_search() {
         }
     }
 
-    while(current.parent) {
-        path.push_back(current.move);
-        current = *(current.parent);
+    while(current->parent) {
+        path.push_back(current->move);
+        current = current->parent;
     }
 }
 
@@ -116,24 +116,31 @@ void A_star::execute() {
     }
 }
 
-void A_star::get_neighbors(Node node, vector<Node>& component) {
+void A_star::get_neighbors(Node* node, vector<Node*>& component) {
     int x, y;
-    int temp = get_blank(node.state_2d);
+    int temp = get_blank(node->state_2d);
     x = temp / 4;
     y = temp % 4;
 
+    Node* temp2 = new Node;
     if(x != 0) {
-        component.push_back(*(node.do_move(UP, x, y)));
+        temp2 = node->do_move(UP, x, y);
+        component.push_back(node->do_move(UP, x, y));
     }
-    if(x != gra.get_size()) {
-        component.push_back(*(node.do_move(DOWN, x, y)));
+    if(x != gra.get_size() - 1) {
+        temp2 = node->do_move(DOWN, x, y);
+        component.push_back(node->do_move(DOWN, x, y));
     }
     if(y != 0) {
-        component.push_back(*(node.do_move(LEFT, x, y)));
+        temp2 = node->do_move(LEFT, x, y);
+        component.push_back(node->do_move(LEFT, x, y));
     }
-    if(y != gra.get_size()) {
-        component.push_back(*(node.do_move(RIGHT, x, y)));
+    if(y != gra.get_size() - 1) {
+        temp2 = node->do_move(RIGHT, x, y);
+        component.push_back(node->do_move(RIGHT, x, y));
     }
+
+    free(temp2);
 }
 
 int A_star::get_blank(vector<vector<int>> board) {

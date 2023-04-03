@@ -17,11 +17,16 @@ class Node {
     int cost;          // Ilość wykonanych ruchów 
     Node* parent;
 
+    Node() {
+
+    }
+
     Node(vector<int> state, Dir parent_move, Node* parent) {
         this->state = state;
         this->move = parent_move;
         this->parent = parent;
-        this->cost = parent->cost + 1;
+        if(parent != nullptr)
+            this->cost = parent->cost + 1;
 
         to_2d();
     }
@@ -30,7 +35,8 @@ class Node {
         this->state_2d = state_2d;
         this->move = parent_move;
         this->parent = parent;
-        this->cost = parent->cost + 1;
+        if(parent != nullptr)
+            this->cost = parent->cost + 1;
 
         vector<int> temp(state_2d.size());
         to_1d();
@@ -133,13 +139,13 @@ class A_star {
     int total_manhattan(vector<vector<int>> board);
     int total_manhattan_1d(vector<int> board);
     int get_blank(vector<vector<int>> board);
-    void get_neighbors(Node node, vector<Node>& component);
+    void get_neighbors(Node* node, vector<Node*>& component);
     
 
     void A_star_search();
     void execute();
 
-    int heurestic1(vector<Node> to_visit);
+    int heurestic1(vector<Node*> to_visit);
 };
 
 #endif
