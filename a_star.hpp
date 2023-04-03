@@ -2,6 +2,7 @@
 #define a_star_hpp
 
 #include <fstream>
+#include <vector>
 #include "gra.hpp"
 
 enum Dir {
@@ -27,7 +28,7 @@ class Node {
         this->cost = parent->cost + 1;
     }
 
-    bool check_win(Gra& gra) {
+    bool check_win(Gra &gra) {
         return gra.check_win();
     }
 
@@ -48,12 +49,17 @@ class A_star {
 
     public:
 
-    A_star(Gra& gra, int heurestic = 0);
+    A_star(Gra &gra, int heurestic = 0);
     int manhattan_dist(int x1, int y1, int x2, int y2);
     int total_manhattan();
+    int total_manhattan_1d(vector<int> board);
     int get_blank(vector<vector<int>> board);
+    void get_neighbors(Node node);
+    
 
     void A_star_search(const vector<vector<int>> board);
+
+    int heurestic1(vector<Node>& to_visit);
 };
 
 #endif
