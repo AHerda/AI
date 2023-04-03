@@ -40,7 +40,9 @@ void A_star::A_star_search(const vector<vector<int>> board) {
 }
 
 void get_neighbors() {
-    if(test)
+    if(get_blank(test) / 4 != 0) {
+        
+    }
 }
 
 int A_star::get_blank(vector<vector<int>> board) {
