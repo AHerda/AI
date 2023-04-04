@@ -1,108 +1,79 @@
-#include <iostream>
-#include <set>
-#include <vector>
-#include <limits>
 #include "a_star.hpp"
-
-using namespace std;
 
 A_star::A_star(Gra& gra, int heurestic) {
     this->gra = gra;
-    this->test = gra.get_board();
     this->heurestic = heurestic;
-    for(int x = 0; x < gra.get_size(); x++) {
-        for(int y = 0; y < gra.get_size(); y++) {
-            this->test[x][y] = gra.get(x, y);
-        }
-    }
 }
 
 int A_star::manhattan_dist(int x1, int y1, int x2, int y2) {
     return abs(x2 - x1) + abs(y2 - y1);
 }
 
-int A_star::total_manhattan(vector<vector<int>> board) {
+int A_star::total_manhattan(std::vector<int> current) {
     int total = 0;
-    for (int x = 0; x < board.size(); x++) {
-        for (int y = 0; y < board.size(); y++) {
-            int value = board[x][y];
-            total += manhattan_dist(x, y, (value - 1) / board.size(), (value - 1) % board.size());
-        }
+    for(int i = 0; i < current.size(); i++) {
+        int value = current[i];
+        if(value == 0) total += manhattan_dist(i / gra.get_size(), i % gra.get_size(), gra.get_size() - 1, gra.get_size() - 1);
+        else total += manhattan_dist(i / gra.get_size(), i % gra.get_size(), (value - 1) / gra.get_size(), (value - 1) % gra.get_size());
     }
     return total;
 }
 
-int A_star::total_manhattan_1d(vector<int> board) {
-    int total = 0;
-    for (int x = 0; x < gra.get_size(); x++) {
-        for (int y = 0; y < gra.get_size(); y++) {
-            int value = board[x * gra.get_size() + y];
-            if(value == 0) total += manhattan_dist(x, y, gra.get_size() - 1, gra.get_size() - 1);
-            else total += manhattan_dist(x, y, (value - 1) / gra.get_size(), (value - 1) % gra.get_size());
-        }
-    }
-    return total;
-}
-
-int A_star::heurestic1(vector<Node*> to_visit) {
-    int i = 0;
+int A_star::heurestic1(std::vector<Node*> to_visit) {
     int result = 0;
     int smallest_cost = std::numeric_limits<int>::max();
-    for(Node* node : to_visit) {
-        if(node->cost < smallest_cost) {
-            int dist = total_manhattan(node->state_2d);
+    for(int i = 0; i < to_visit.size(); i++) {
+        if(to_visit[i]->cost < smallest_cost) {
+            int dist = total_manhattan(to_visit[i]->state);
 
-            if(dist + node->cost < smallest_cost) {
-                smallest_cost = dist + node->cost;
+            if(dist + to_visit[i]->cost < smallest_cost) {
+                smallest_cost = dist + to_visit[i]->cost;
                 result = i;
             }
         }
-
-        i++;
     }
-
     return result;
 }
 
 void A_star::A_star_search() {
-    set<string> visited;
-    vector<Node*> to_visit;
+    int explored = 0;
+    int max_nodes = 0;
+    int new_nodes = 0;
+    std::set<std::string> visited;
+    std::vector<Node*> to_visit;
 
-    Node* start = new Node(gra.to_1d(), NONE, nullptr);
+    Node* start = new Node(gra.get_board(), NONE, nullptr, 0);
 
     visited.insert(start->state_to_string());
+
     to_visit.push_back(start);
 
     Node* current = to_visit.front();
 
-    cout << "przed whilem";
-    while(true) {
+    while(to_visit.size() > 0) {
         int i;
         i = heurestic1(to_visit);
+        current->print_table2();
 
         current = to_visit[i];
 
-        vector<Node*> component;
+        new_nodes = neighbors(visited, to_visit, current);
+        explored++;
+        max_nodes += new_nodes;
 
-        get_neighbors(current, component);
-
-        for(Node* node : component) {
-            const auto i = visited.find(node->state_to_string());
-            if(i != visited.end()) {
-                to_visit.push_back(node);
-                visited.insert(node->state_to_string());
-            }
-        }
-
-        if(current->check_win())
+        if(current->check_win()) {
+            std::cout << "znaleziono droge" << std::endl;
             break;
+        }
 
         to_visit.erase(to_visit.begin() + i);
-
-        if(to_visit.size() == 0) {
-            return;
-        }
     }
+
+    std::cout << "\nIlość ruchów w rozwiązaniu: " << current->cost;
+    std::cout << "\nIlość sprawdzonych stanów: " << explored + 1;
+    std::cout << "\nIlość stanów trzymana w pamięci: " << max_nodes + 1 << std::endl;
+
+
 
     while(current->parent) {
         path.push_back(current->move);
@@ -110,46 +81,83 @@ void A_star::A_star_search() {
     }
 }
 
-void A_star::execute() {
-    for(int i = path.size() - 1; i >= 0; i++) {
-        gra.move(path[i]);
-    }
-}
-
-void A_star::get_neighbors(Node* node, vector<Node*>& component) {
-    int x, y;
-    int temp = get_blank(node->state_2d);
-    x = temp / 4;
-    y = temp % 4;
-
-    Node* temp2 = new Node;
-    if(x != 0) {
-        temp2 = node->do_move(UP, x, y);
-        component.push_back(node->do_move(UP, x, y));
-    }
-    if(x != gra.get_size() - 1) {
-        temp2 = node->do_move(DOWN, x, y);
-        component.push_back(node->do_move(DOWN, x, y));
-    }
-    if(y != 0) {
-        temp2 = node->do_move(LEFT, x, y);
-        component.push_back(node->do_move(LEFT, x, y));
-    }
-    if(y != gra.get_size() - 1) {
-        temp2 = node->do_move(RIGHT, x, y);
-        component.push_back(node->do_move(RIGHT, x, y));
-    }
-
-    free(temp2);
-}
-
-int A_star::get_blank(vector<vector<int>> board) {
-    for (int x = 0; x < gra.get_size(); x++) {
-        for (int y = 0; y < gra.get_size(); y++) {
-            if(board[x][y] == 0) {
-                return x * gra.get_size() + y;
-            }
+int A_star::neighbors(std::set<std::string>& visited, std::vector<Node*>& to_visit, Node* current) {
+    int index;
+    for(int i = 0; i < gra.get_size() * gra.get_size(); i++) {
+        if(current->state[i] == 0) {
+            index = i;
         }
     }
-    return -1;
+    int exploredCount = 0;
+
+    //Moving UP
+    if (!(index <= 3)) {
+        Node* node = new Node(current->state, Dir::UP, current, current->cost + 1);
+
+        node->state[index] = node->state[index - 4];
+        node->state[index - 4] = 0;
+
+        add_if_not_explored(visited, to_visit, node, exploredCount);
+    }
+
+    //Moving DOWN
+    if (!(index >= 12)) {
+        Node* node = new Node(current->state, Dir::DOWN, current, current->cost + 1);
+
+        node->state[index] = node->state[index + 4];
+        node->state[index + 4] = 0;
+
+        add_if_not_explored(visited, to_visit, node, exploredCount);
+    }
+
+    //Moving LEFT
+    if (!(index % 4 == 0)) {
+        Node* node = new Node(current->state, Dir::LEFT, current, current->cost + 1);
+
+        node->state[index] = node->state[index - 1];
+        node->state[index - 1] = 0;
+
+        add_if_not_explored(visited, to_visit, node, exploredCount);
+    }
+
+    //Moving RIGHT
+    if (!(index % 4 == 3)) {
+        Node* node = new Node(current->state, Dir::RIGHT, current, current->cost + 1);
+
+        node->state[index] = node->state[index + 1];
+        node->state[index + 1] = 0;
+
+        add_if_not_explored(visited, to_visit, node, exploredCount);
+    }
+    return exploredCount;
+}
+
+void A_star::add_if_not_explored(std::set<std::string>& visited, std::vector<Node*>& to_visit, Node* node, int &count) {
+    if (is_explored(visited, node->state_to_string())) {
+        delete node;
+    }
+    else {
+        to_visit.push_back(node);
+        add_explored(visited, node->state_to_string());
+        count++;
+    }
+}
+
+bool A_star::is_explored(std::set<std::string>& visited, std::string state) {
+    auto iterator = visited.find(state);
+    if (iterator == visited.end()) {
+        return false;
+    }
+    return true;
+}
+
+void A_star::add_explored(std::set<std::string>& visited, std::string state) {
+    visited.insert(state);
+}
+
+
+void A_star::execute() {
+    for(int i = path.size() - 1; i >= 0; i--) {
+        gra.move(path[i]);
+    }
 }

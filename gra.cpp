@@ -4,22 +4,20 @@
 #include <algorithm>
 #include "gra.hpp"
 
-using namespace std;
 
 Gra::Gra(int size) {
     this->size = size;
-    board = vector<vector<int>>(size, vector<int>(size));
+    board = std::vector<int>(size);
 }
 
 void Gra::rand_start_ez(int n) {
-    mt19937 mt(random_device{}()); 
-    for(int x = 0; x < size; x++) {
-        for(int y = 0; y < size; y++) {
-            board[x][y] = (x * size + y + 1) % (size * size);
-        }
+    std::mt19937 mt(std::random_device{}()); 
+    for(int i = 0; i < size * size; i++) {
+        board[i] = (i + 1) % (size * size);
     }
     x = size - 1;
     y = size - 1;
+    blank = size * size;
 
     int i = 0;
     while(i != n) {
@@ -33,97 +31,90 @@ void Gra::rand_start_ez(int n) {
 }
 
 void Gra::rand_start() {
-    vector<int> temp = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
-    default_random_engine dre(random_device{}());
+    std::vector<int> temp;
+    for(int i = 0; i  < size * size; i++) {
+        temp.push_back((i + 1) % (size * size));
+    }
+
+    std::default_random_engine dre(std::random_device{}());
     do {
         shuffle(temp.begin(), temp.end(), dre);
     } while(!solvable(temp));
 
-    for(int x = 0; x < size; x++) {
-        for(int y = 0; y < size; y++) {
-            board[x][y] = temp[x * size + y];
-        }
-    }
+    board = temp;
 }
 
-bool Gra::solvable(vector<int> tab) {
-    int parity = 0;
-    int grid_width = size;
-    int row = 0;        // obecny rząd
-    int blank_row = 0;   // rząd z pustym polem
-
-    for (size_t i = 0; i < tab.size(); i++)
-    {
-        if (i % grid_width == 0) {
-            row++;
-        }
-        if (tab[i] == 0) {
-            blank_row = row;
-            continue;
-        }
-        for (size_t j = i + 1; j < tab.size(); j++)
-        {
-            if (tab[i] > tab[j] && tab[j] != 0)
-            {
-                parity++;
+bool Gra::solvable(std::vector<int> tab) {
+    int inversions_count = 0;
+    for (int i = 0; i < size * size - 1; i++) {
+        for (int j = i + 1; j < size * size; j++) {
+            if (tab[i] > tab[j] && tab[i] != 0 && tab[j] != 0) {
+                inversions_count++;
             }
         }
     }
-
-    if (grid_width % 2 == 0) {
-        if (blank_row % 2 == 0) {
-            return parity % 2 == 0;
-        } 
-        else {
-            return parity % 2 != 0;
-        }
-    } 
-    else {
-        return parity % 2 == 0;
+    std::cout << inversions_count << std::endl;
+    if (inversions_count % 2 == 0) {
+        return true;
     }
+    return false;
 }
 
 bool Gra::move(Dir d) {
+    bool check = false;
+    int index;
+    for(int i = 0; i < size * size; i++) {
+        if(board[i] == 0) {
+            index = i;
+        }
+    }
+
     switch (d) {
         case UP:
-            if(x == 0)
-                return false;
-            board[x][y] = board[x - 1][y];
-            board[x - 1][y] = 0;
-            x--;
-            return true;
+            if(index >= size) {
+                board[index] = board[index - size];
+                board[index - size] = 0;
+                blank = index - size;
+                x--;
+                check = true;
+            }
+            break;
         case DOWN:
-            if(x == size - 1)
-                return false;
-            board[x][y] = board[x + 1][y];
-            board[x + 1][y] = 0;
-            x++;
-            return true;
+            if(index < size * (size - 1)) {
+                board[index] = board[index + size];
+                board[index + size] = 0;
+                blank = index + size;
+                x++;
+                check = true;
+            }
+            break;
         case LEFT:
-            if(y == 0)
-                return false;
-            board[x][y] = board[x][y - 1];
-            board[x][y - 1] = 0;
-            y--;
-            return true;
+            if(index % size != 0) {
+                board[index] = board[index - 1];
+                board[index - 1] = 0;
+                blank = index - 1;
+                y--;
+                check = true;
+            }
+            break;
         case RIGHT:
-            if(y == size - 1)
-                return false;
-            board[x][y] = board[x][y + 1];
-            board[x][y + 1] = 0;
-            y++;
-            return true;
+            if(index % size != size - 1) {
+                board[index] = board[index + 1];
+                board[index + 1] = 0;
+                blank = index + 1;
+                y++;
+                check = true;
+            }
+            break;
         case NONE:
-            bool check = check_win();
-            if(check) {
-                cout << "Wygrana!!!";
-            }
-            else {
-                cout << "Może następnym razem :((";
-            }
-            return true;
+            check = true;
+            break;
     }
-    return false;
+    /*if(check_win()) {
+        std::cout << "============" << std::endl << "Wygrana!!!!!" << std::endl << "============" << std::endl;
+        print_table();
+    }*/
+    return check;
 }
 
 Dir Gra::translator_char(char ch) {
@@ -161,30 +152,28 @@ Dir Gra::translator_int(int r) {
 bool Gra::check_win() {
     int counter = 0;
 
-    for(int x = 0; x < size; x++) {
-        for(int y = 0; y < size; y++) {
-            if(board[x][y] == (x * 4 + y + 1) % (size * size)) {
-                counter++;
-            }
-        }
+    for(int i = 0; i < size * size; i++) {
+        if(board[i] == (i + 1) % (size * size)) counter++;
     }
 
-    return counter == 16;
+    return counter == size * size;
 }
 
 void Gra::print_table() {
-    cout << "-----------------------------\n";
-    for(int x = 0; x < size; x++) {
-        for(int y = 0; y < size; y++) {
-            cout << "| " << board[x][y] << " ";
+        std::cout << "-----------------------------\n";
+        int i = 0;
+        for(int x = 0; x < size; x++) {
+            for(int y = 0; y < size; y++) {
+                std::cout << "| " << board[i] << " ";
+                i++;
+            }
+            std::cout << "|\n";
+            std::cout << "-----------------------------\n";
         }
-        cout << "|\n";
-        cout << "-----------------------------\n";
     }
-}
 
 int Gra::get(int x, int y) {
-    return board[x][y];
+    return board[x * size + y];
 }
 
 int Gra::get_size() {
@@ -192,25 +181,9 @@ int Gra::get_size() {
 }
 
 int Gra::get_xy() {
-    return x * 4 + y;
+    return blank;
 }
 
-vector<int> Gra::to_1d() {
-    vector<int> result;
-    for(int x = 0; x < size; x++) {
-        for(int y = 0; y < size; y++) {
-            result.push_back(board[x][y]);
-        }
-    }
-    return result;
-}
-
-vector<vector<int>> Gra::get_board() {
-    vector<vector<int>> result(size, vector<int>(size));
-    for(int x = 0; x < size; x++) {
-        for(int y = 0; y < size; y++) {
-            result[x][y] = board[x][y];
-        }
-    }
-    return result;
+std::vector<int> Gra::get_board() {
+    return board;
 }

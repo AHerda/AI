@@ -4,14 +4,14 @@
 #include <vector>
 #include "dir.hpp"
 
-using namespace std;
 
 class Gra {
     private:
 
     int size;           //wielkość planszy
     int x, y;           //miejsce puste
-    vector<vector<int>> board;  //plansza wielkości size
+    int blank;          //miejsce puste ale 1D
+    std::vector<int> board;  //plansza wielkości size
 
     public:
 
@@ -21,15 +21,13 @@ class Gra {
     bool move(Dir d);
     Dir translator_char(char ch);
     Dir translator_int(int r);
-    bool solvable(vector<int> tab);
+    bool solvable(std::vector<int> tab);
     bool check_win();
     int get_size();
     int get_xy();
     int get(int x, int y);
-    vector<vector<int>> get_board();
+    std::vector<int> get_board();
     void print_table();
-
-    vector<int> to_1d();
 };
 
 #endif
