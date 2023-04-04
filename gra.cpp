@@ -17,10 +17,10 @@ void Gra::rand_start_ez(int n) {
     }
     x = size - 1;
     y = size - 1;
-    blank = size * size;
+    blank = size * size - 1;
 
     int i = 0;
-    while(i != n) {
+    while(i < n) {
         int r = mt() % 4;
         bool check;
         check = move(translator_int(r));
@@ -53,7 +53,6 @@ bool Gra::solvable(std::vector<int> tab) {
             }
         }
     }
-    std::cout << inversions_count << std::endl;
     if (inversions_count % 2 == 0) {
         return true;
     }
@@ -110,10 +109,10 @@ bool Gra::move(Dir d) {
             check = true;
             break;
     }
-    /*if(check_win()) {
+    if(check_win()) {
         std::cout << "============" << std::endl << "Wygrana!!!!!" << std::endl << "============" << std::endl;
         print_table();
-    }*/
+    }
     return check;
 }
 

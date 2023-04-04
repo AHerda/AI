@@ -35,16 +35,33 @@ int A_star::heurestic1(std::vector<Node*> to_visit) {
     return result;
 }
 
+int A_star::heurestic2(std::vector<Node*> to_visit) {
+    int result = 0;
+    int smallest_cost = std::numeric_limits<int>::max();
+    for(int i = 0; i < to_visit.size(); i++) {
+        if(to_visit[i]->cost < smallest_cost) {
+            int dist = total_manhattan(to_visit[i]->state);
+            int linear = linearConflicts(to_visit[i]->state);
+
+            if(dist + linear + to_visit[i]->cost < smallest_cost) {
+                smallest_cost = dist + to_visit[i]->cost;
+                result = i;
+            }
+        }
+    }
+    return result;
+}
+
 void A_star::A_star_search() {
     int explored = 0;
     int max_nodes = 0;
     int new_nodes = 0;
-    std::set<std::string> visited;
+    std::unordered_map<std::string, bool> visited;
     std::vector<Node*> to_visit;
 
     Node* start = new Node(gra.get_board(), NONE, nullptr, 0);
 
-    visited.insert(start->state_to_string());
+    add_explored(visited, start->state_to_string());
 
     to_visit.push_back(start);
 
@@ -52,8 +69,8 @@ void A_star::A_star_search() {
 
     while(to_visit.size() > 0) {
         int i;
-        i = heurestic1(to_visit);
-        current->print_table2();
+        if(heurestic == 0) i = heurestic1(to_visit);
+        else i = heurestic2(to_visit);
 
         current = to_visit[i];
 
@@ -81,7 +98,7 @@ void A_star::A_star_search() {
     }
 }
 
-int A_star::neighbors(std::set<std::string>& visited, std::vector<Node*>& to_visit, Node* current) {
+int A_star::neighbors(std::unordered_map<std::string, bool>& visited, std::vector<Node*>& to_visit, Node* current) {
     int index;
     for(int i = 0; i < gra.get_size() * gra.get_size(); i++) {
         if(current->state[i] == 0) {
@@ -90,28 +107,28 @@ int A_star::neighbors(std::set<std::string>& visited, std::vector<Node*>& to_vis
     }
     int exploredCount = 0;
 
-    //Moving UP
-    if (!(index <= 3)) {
+    //UP
+    if (!(index < gra.get_size())) {
         Node* node = new Node(current->state, Dir::UP, current, current->cost + 1);
 
-        node->state[index] = node->state[index - 4];
-        node->state[index - 4] = 0;
+        node->state[index] = node->state[index - gra.get_size()];
+        node->state[index - gra.get_size()] = 0;
 
         add_if_not_explored(visited, to_visit, node, exploredCount);
     }
 
-    //Moving DOWN
-    if (!(index >= 12)) {
+    //DOWN
+    if (!(index >= gra.get_size() * (gra.get_size() - 1))) {
         Node* node = new Node(current->state, Dir::DOWN, current, current->cost + 1);
 
-        node->state[index] = node->state[index + 4];
-        node->state[index + 4] = 0;
+        node->state[index] = node->state[index + gra.get_size()];
+        node->state[index + gra.get_size()] = 0;
 
         add_if_not_explored(visited, to_visit, node, exploredCount);
     }
 
-    //Moving LEFT
-    if (!(index % 4 == 0)) {
+    //LEFT
+    if (!(index % gra.get_size() == 0)) {
         Node* node = new Node(current->state, Dir::LEFT, current, current->cost + 1);
 
         node->state[index] = node->state[index - 1];
@@ -120,8 +137,8 @@ int A_star::neighbors(std::set<std::string>& visited, std::vector<Node*>& to_vis
         add_if_not_explored(visited, to_visit, node, exploredCount);
     }
 
-    //Moving RIGHT
-    if (!(index % 4 == 3)) {
+    //RIGHT
+    if (!(index % gra.get_size() == gra.get_size() - 1)) {
         Node* node = new Node(current->state, Dir::RIGHT, current, current->cost + 1);
 
         node->state[index] = node->state[index + 1];
@@ -132,7 +149,7 @@ int A_star::neighbors(std::set<std::string>& visited, std::vector<Node*>& to_vis
     return exploredCount;
 }
 
-void A_star::add_if_not_explored(std::set<std::string>& visited, std::vector<Node*>& to_visit, Node* node, int &count) {
+void A_star::add_if_not_explored(std::unordered_map<std::string, bool>& visited, std::vector<Node*>& to_visit, Node* node, int &count) {
     if (is_explored(visited, node->state_to_string())) {
         delete node;
     }
@@ -143,7 +160,7 @@ void A_star::add_if_not_explored(std::set<std::string>& visited, std::vector<Nod
     }
 }
 
-bool A_star::is_explored(std::set<std::string>& visited, std::string state) {
+bool A_star::is_explored(std::unordered_map<std::string, bool>& visited, std::string state) {
     auto iterator = visited.find(state);
     if (iterator == visited.end()) {
         return false;
@@ -151,13 +168,60 @@ bool A_star::is_explored(std::set<std::string>& visited, std::string state) {
     return true;
 }
 
-void A_star::add_explored(std::set<std::string>& visited, std::string state) {
-    visited.insert(state);
+void A_star::add_explored(std::unordered_map<std::string, bool>& visited, std::string state) {
+    visited.insert(std::pair<std::string, bool>(state, true));
 }
 
 
 void A_star::execute() {
-    for(int i = path.size() - 1; i >= 0; i--) {
+    for(int i = path.size(); i >= 0; i--) {
         gra.move(path[i]);
+        if(i == 1 || i == 0) gra.print_table();
+        //std::cout << path[i] << std::endl;
     }
+}
+
+int A_star::rowConflicts(std::vector<int> tiles) {
+    int grid[4][4];
+    int rowConflicts = 0;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            grid[i][j] = tiles[4 * i + j];
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (grid[i][j] > grid[i][j + 1] && (grid[i][j] - 1) / 4 == i && (grid[i][j + 1] - 1) / 4 == i) {
+                rowConflicts++;
+            }
+        }
+    }
+
+    return rowConflicts;
+}
+
+int A_star::columnConflicts(std::vector<int> tiles) {
+    int grid[4][4];
+    int columnConflicts = 0;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            grid[i][j] = tiles[4 * i + j];
+        }
+    }
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (grid[i][j] > grid[i + 1][j] && (grid[i][j] - 1) % 4 == i && (grid[i + 1][j] - 1) % 4 == i) {
+                columnConflicts++;
+            }
+        }
+    }
+
+    return columnConflicts;
+}
+
+int A_star::linearConflicts(std::vector<int> tiles) {
+    int rowConflictsCount = rowConflicts(tiles);
+    int columnConflictsCount = columnConflicts(tiles);
+
+    return rowConflictsCount + columnConflictsCount;
 }

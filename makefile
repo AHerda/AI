@@ -13,4 +13,4 @@ a_star.o:
 	g++ -pedantic -Wall -fsanitize=address -O3 -c a_star.cpp
 
 clean:
-	rm *.o main
+	rm *.o main main.exe

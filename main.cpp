@@ -4,14 +4,12 @@
 
 int main(int argc, char** argv) {
     Gra gra(3);
-    gra.rand_start_ez();
+    gra.rand_start();
     gra.print_table();
 
-    A_star as(gra);
+    A_star as(gra, 0);
     as.A_star_search();
     as.execute();
-
-    gra.print_table();
 
     return 0;
 }

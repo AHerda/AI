@@ -2,7 +2,8 @@
 #define a_star_hpp
 
 #include <iostream>
-#include <set>
+#include <unordered_map>
+
 #include <vector>
 #include <limits>
 #include <string>
@@ -22,16 +23,21 @@ class A_star {
     int manhattan_dist(int x1, int y1, int x2, int y2);
     int total_manhattan(std::vector<int> board);
 
-    int neighbors(std::set<std::string>& visited, std::vector<Node*>& to_visit, Node* current);
-    void add_if_not_explored(std::set<std::string>& visited, std::vector<Node*>& to_visit, Node* node, int &count);
-    bool is_explored(std::set<std::string>& visited, std::string state);
-    void add_explored(std::set<std::string>& visited, std::string state);
+    int neighbors(std::unordered_map<std::string, bool>& visited, std::vector<Node*>& to_visit, Node* current);
+    void add_if_not_explored(std::unordered_map<std::string, bool>& visited, std::vector<Node*>& to_visit, Node* node, int &count);
+    bool is_explored(std::unordered_map<std::string, bool>& visited, std::string state);
+    void add_explored(std::unordered_map<std::string, bool>& visited, std::string state);
     
 
     void A_star_search();
     void execute();
 
     int heurestic1(std::vector<Node*> to_visit);
+    int heurestic2(std::vector<Node*> to_visit);
+
+    int rowConflicts(std::vector<int> tiles);
+    int columnConflicts(std::vector<int> tiles);
+    int linearConflicts(std::vector<int> tiles);
 };
 
 #endif
