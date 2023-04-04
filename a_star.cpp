@@ -176,22 +176,22 @@ void A_star::add_explored(std::unordered_map<std::string, bool>& visited, std::s
 void A_star::execute() {
     for(int i = path.size(); i >= 0; i--) {
         gra.move(path[i]);
-        if(i == 1 || i == 0) gra.print_table();
+        //if(i == 0) gra.print_table();
         //std::cout << path[i] << std::endl;
     }
 }
 
 int A_star::rowConflicts(std::vector<int> tiles) {
-    int grid[4][4];
+    int grid[gra.get_size()][gra.get_size()];
     int rowConflicts = 0;
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            grid[i][j] = tiles[4 * i + j];
+    for (int i = 0; i < gra.get_size(); i++) {
+        for (int j = 0; j < gra.get_size(); j++) {
+            grid[i][j] = tiles[gra.get_size() * i + j];
         }
     }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (grid[i][j] > grid[i][j + 1] && (grid[i][j] - 1) / 4 == i && (grid[i][j + 1] - 1) / 4 == i) {
+    for (int i = 0; i < gra.get_size(); i++) {
+        for (int j = 0; j < gra.get_size() - 1; j++) {
+            if (grid[i][j] > grid[i][j + 1] && (grid[i][j] - 1) / gra.get_size() == i && (grid[i][j + 1] - 1) / gra.get_size() == i) {
                 rowConflicts++;
             }
         }
@@ -201,16 +201,16 @@ int A_star::rowConflicts(std::vector<int> tiles) {
 }
 
 int A_star::columnConflicts(std::vector<int> tiles) {
-    int grid[4][4];
+    int grid[gra.get_size()][gra.get_size()];
     int columnConflicts = 0;
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            grid[i][j] = tiles[4 * i + j];
+    for (int i = 0; i < gra.get_size(); i++) {
+        for (int j = 0; j < gra.get_size(); j++) {
+            grid[i][j] = tiles[gra.get_size() * i + j];
         }
     }
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (grid[i][j] > grid[i + 1][j] && (grid[i][j] - 1) % 4 == i && (grid[i + 1][j] - 1) % 4 == i) {
+    for (int i = 0; i < gra.get_size() - 1; i++) {
+        for (int j = 0; j < gra.get_size(); j++) {
+            if (grid[i][j] > grid[i + 1][j] && (grid[i][j] - 1) % gra.get_size() == i && (grid[i + 1][j] - 1) % gra.get_size() == i) {
                 columnConflicts++;
             }
         }
