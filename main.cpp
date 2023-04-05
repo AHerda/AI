@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
     gra.rand_start();
     gra.print_table();
 
-    A_star as(gra, 1);
+    A_star as(gra, 0);
     as.A_star_search();
     as.execute();
 

@@ -18,7 +18,7 @@ class Gra {
     Gra(int size = 3);
     void rand_start();
     void rand_start_ez(int n = 100);
-    bool move(Dir d);
+    bool move(Dir d, bool check2 = false);
     Dir translator_char(char ch);
     Dir translator_int(int r);
     bool solvable(std::vector<int> tab);
