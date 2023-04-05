@@ -3,11 +3,11 @@
 #include "a_star.hpp"
 
 int main(int argc, char** argv) {
-    Gra gra(3);
-    gra.rand_start();
+    Gra gra(4);
+    gra.rand_start_ez(50);
     gra.print_table();
 
-    A_star as(gra, 1);
+    A_star as(gra, 0);
     as.A_star_search();
     as.execute();
 

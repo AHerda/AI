@@ -11,10 +11,13 @@ Gra::Gra(int size) {
 }
 
 void Gra::rand_start_ez(int n) {
-    std::mt19937 mt(std::random_device{}()); 
+    std::mt19937 mt(std::random_device{}());
+    std::vector<int> temp;
     for(int i = 0; i < size * size; i++) {
-        board[i] = (i + 1) % (size * size);
+        temp.push_back((i + 1) % (size * size));
     }
+
+    board = temp;
     x = size - 1;
     y = size - 1;
     blank = size * size - 1;
@@ -23,7 +26,7 @@ void Gra::rand_start_ez(int n) {
     while(i < n) {
         int r = mt() % 4;
         bool check;
-        check = move(translator_int(r));
+        check = move(translator_int(r), true);
 
         if(check)
             i++;
@@ -59,7 +62,7 @@ bool Gra::solvable(std::vector<int> tab) {
     return false;
 }
 
-bool Gra::move(Dir d) {
+bool Gra::move(Dir d, bool check2) {
     bool check = false;
     int index;
     for(int i = 0; i < size * size; i++) {
@@ -109,7 +112,7 @@ bool Gra::move(Dir d) {
             check = true;
             break;
     }
-    if(check_win()) {
+    if(check_win() && !check2) {
         std::cout << "============" << std::endl << "Wygrana!!!!!" << std::endl << "============" << std::endl;
         print_table();
     }

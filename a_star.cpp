@@ -70,7 +70,7 @@ void A_star::A_star_search() {
     while(to_visit.size() > 0) {
         int i;
         if(heurestic == 0) i = heurestic1(to_visit);
-        else i = heurestic2(to_visit);
+        else if (heurestic == 1) i = heurestic2(to_visit);
 
         current = to_visit[i];
 
