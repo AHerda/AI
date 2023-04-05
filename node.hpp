@@ -23,13 +23,11 @@ class Node {
         this->cost = cost;
     }
 
-    std::string state_to_string() {
-        std::string result;
+    unsigned long long state_to_ull() {
+        unsigned long long result = 0;
         for(size_t i = 0; i < state.size(); i++) {
-            result += std::to_string(state[i]);
-            if(i + 1 != state.size()) {
-                result += " ";
-            }
+            int temp = state[i];
+            result += (temp << (i * 4));
         }
         return result;
     }

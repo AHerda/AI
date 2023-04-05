@@ -56,12 +56,12 @@ void A_star::A_star_search() {
     int explored = 0;
     int max_nodes = 0;
     int new_nodes = 0;
-    std::unordered_map<std::string, bool> visited;
+    std::unordered_set<unsigned long long> visited;
     std::vector<Node*> to_visit;
 
     Node* start = new Node(gra.get_board(), NONE, nullptr, 0);
 
-    add_explored(visited, start->state_to_string());
+    add_explored(visited, start->state_to_ull());
 
     to_visit.push_back(start);
 
@@ -98,7 +98,7 @@ void A_star::A_star_search() {
     }
 }
 
-int A_star::neighbors(std::unordered_map<std::string, bool>& visited, std::vector<Node*>& to_visit, Node* current) {
+int A_star::neighbors(std::unordered_set<unsigned long long>& visited, std::vector<Node*>& to_visit, Node* current) {
     int index;
     for(int i = 0; i < gra.get_size() * gra.get_size(); i++) {
         if(current->state[i] == 0) {
@@ -149,18 +149,18 @@ int A_star::neighbors(std::unordered_map<std::string, bool>& visited, std::vecto
     return exploredCount;
 }
 
-void A_star::add_if_not_explored(std::unordered_map<std::string, bool>& visited, std::vector<Node*>& to_visit, Node* node, int &count) {
-    if (is_explored(visited, node->state_to_string())) {
+void A_star::add_if_not_explored(std::unordered_set<unsigned long long>& visited, std::vector<Node*>& to_visit, Node* node, int &count) {
+    if (is_explored(visited, node->state_to_ull())) {
         delete node;
     }
     else {
         to_visit.push_back(node);
-        add_explored(visited, node->state_to_string());
+        add_explored(visited, node->state_to_ull());
         count++;
     }
 }
 
-bool A_star::is_explored(std::unordered_map<std::string, bool>& visited, std::string state) {
+bool A_star::is_explored(std::unordered_set<unsigned long long>& visited, unsigned long long state) {
     auto iterator = visited.find(state);
     if (iterator == visited.end()) {
         return false;
@@ -168,8 +168,8 @@ bool A_star::is_explored(std::unordered_map<std::string, bool>& visited, std::st
     return true;
 }
 
-void A_star::add_explored(std::unordered_map<std::string, bool>& visited, std::string state) {
-    visited.insert(std::pair<std::string, bool>(state, true));
+void A_star::add_explored(std::unordered_set<unsigned long long>& visited, unsigned long long state) {
+    visited.insert(state);
 }
 
 
