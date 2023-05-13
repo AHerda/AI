@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     bool end_game;
     int player, msg, move;
 
-    if( argc!=5 ) {
+    if( argc!=5 && argc != 4 ) {
         printf("Wrong number of arguments\n");
         return -1;
     }
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     setBoard(); 
     end_game = false;
     player = atoi(argv[3]);
-    depth = atoi(argv[4]);
+    depth = (argc == 4) ? 5 : atoi(argv[4]);
 
     while( !end_game ) {
         memset(server_message, '\0', sizeof(server_message));
@@ -79,12 +79,7 @@ int main(int argc, char *argv[])
             printBoard();
         }
         if( (msg==0) || (msg==6) ) {
-            printf("Your move: ");
-            if( fgets(client_message, sizeof(client_message), stdin)==NULL ) {
-                printf("Error while reading move\n");
-                return -1;
-            };
-            move = atoi(client_message);
+            move = bestMove(player);
             setMove(move, player);
             printBoard();
             memset(client_message, '\0', sizeof(client_message));
