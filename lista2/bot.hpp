@@ -2,11 +2,14 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <set>
 
 int depth, bot;
+std::set<long long> set;
 int minmax(int board[5][5], int player, int move, int alpha, int beta);
 int value(int board[5][5], int player);
 int inertion(int board[5][5], int player);
+bool visited(int board[5][5]);
 long long boardToInt(int board[5][5]);
 
 int bestMove(int player) {
@@ -35,8 +38,7 @@ int bestMove(int player) {
 
 
 int minmax(int board[5][5], int player, int move, int alpha, int beta) {
-    std::cout << boardToInt(board) << std::endl;
-
+    if(visited(board)) return -1000;
     if(winCheck(player)) return (player == bot) ? 1000 : -1000;
     if(loseCheck(player)) return (player == bot) ? -1000 : 1000;
     if(move == depth) return (player == bot) ? value(board, player) : -1 * value(board, player);
@@ -107,7 +109,7 @@ int inertion(int board[5][5], int player) {
 }
 
 bool visited(int board[5][5]) {
-
+    return set.insert(boardToInt(board)).second;
 }
 
 long long boardToInt(int board[5][5]) {
