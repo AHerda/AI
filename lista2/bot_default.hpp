@@ -1,13 +1,11 @@
 #pragma once
 
-#include <stdlib.h>
-#include <iostream>
+#include <string.h>
 
 int depth, bot;
 int minmax(int board[5][5], int player, int move, int alpha, int beta);
 int value(int board[5][5], int player);
 int inertion(int board[5][5], int player);
-long long boardToInt(int board[5][5]);
 
 int bestMove(int player) {
     bot = player;
@@ -35,11 +33,9 @@ int bestMove(int player) {
 
 
 int minmax(int board[5][5], int player, int move, int alpha, int beta) {
-    std::cout << boardToInt(board) << std::endl;
-
     if(winCheck(player)) return (player == bot) ? 1000 : -1000;
     if(loseCheck(player)) return (player == bot) ? -1000 : 1000;
-    if(move == depth) return (player == bot) ? value(board, player) : -1 * value(board, player);
+    if(move == depth) return 0;
 
     int best = (player == bot) ? -10000 : 10000;
 
@@ -99,28 +95,9 @@ int inertion(int board[5][5], int player) {
     for(int i = 0; i < 5; i++) {
         for(int j = 0; j < 5; j++) {
             if(board[i][j] == player) {
-                sum += abs(i - 3 + 1) + abs(j - 3 + 1);
+                sum += std::abs(i - 3 + 1) + std::abs(j - 3 + 1);
             }
         }
     }
     return 200 - sum;
-}
-
-bool visited(int board[5][5]) {
-
-}
-
-long long boardToInt(int board[5][5]) {
-    long long result = 0;
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
-            result += board[i][j];
-
-            if(i != 4 || j != 4) {
-                result << 2;
-            }
-        }
-    }
-
-    return result;
 }
