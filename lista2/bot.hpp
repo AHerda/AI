@@ -22,7 +22,7 @@ int bestMove(int player) {
             if(board[i][j] == 0) {
 
                 board[i][j] = player;
-                int temp = minmax(board, bot, 0, -100000, 100000);
+                int temp = minmax(board, bot, 0, -10000, 10000);
                 board[i][j] = 0;
 
                 if(temp > max) {
@@ -44,8 +44,6 @@ int minmax(int board[5][5], int player, int move, int alpha, int beta) {
     if(loseCheck(player)) return (player == bot) ? -1000 : 1000;
     if(move == depth) return (player == bot) ? value(board, player) : -1 * value(board, player);
 
-    int best = (player == bot) ? -10000 : 10000;
-
     bool possible_move_check = false;
     if(player == bot) {
         for(int i = 0; i < 5; i++) {
@@ -57,17 +55,15 @@ int minmax(int board[5][5], int player, int move, int alpha, int beta) {
                     int temp = minmax(board, 3 - player, move + 1, alpha, beta);
                     board[i][j] = 0;
 
-                    if(temp > best) {
-                        best = temp - move * 10;
-
-                        alpha = (alpha < best) ? best : alpha;
+                    if(temp > alpha) {
+                        alpha = temp - move * 10;
                         if(beta <= alpha) break;
                     }
                 }
             }
         }
         if(!possible_move_check) return 0;
-        return best;
+        return alpha;
     }
     else {
         for(int i = 0; i < 5; i++) {
@@ -79,38 +75,25 @@ int minmax(int board[5][5], int player, int move, int alpha, int beta) {
                     int temp = minmax(board, 3 - player, move + 1, alpha, beta);
                     board[i][j] = 0;
 
-                    if(temp < best) {
-                        best = temp + move * 10;
-
-                        beta = (beta > best) ? best : beta;
+                    if(temp < beta) {
+                        beta = temp + move * 10;
                         if(beta <= alpha) break;
                     }
                 }
             }
         }
         if(!possible_move_check) return 0;
-        return -1 * best;
+        return beta;
     }
 }
 
 int value(int board[5][5], int player) {
-    return inertion(board, player);
-}
-
-int inertion(int board[5][5], int player) {
-    int sum = 0;
-    for(int i = 0; i < 5; i++) {
-        for(int j = 0; j < 5; j++) {
-            if(board[i][j] == player) {
-                sum += abs(i - 3 + 1) + abs(j - 3 + 1);
-            }
-        }
-    }
-    return -1 *  sum;
+    return 0;
 }
 
 bool visited(int board[5][5]) {
-    return set.insert(boardToInt(board)).second;
+    auto result = set.insert(boardToInt(board));
+    return result.second;
 }
 
 long long boardToInt(int board[5][5]) {
@@ -118,10 +101,7 @@ long long boardToInt(int board[5][5]) {
     for(int i = 0; i < 5; i++) {
         for(int j = 0; j < 5; j++) {
             result += board[i][j];
-
-            if(i != 4 || j != 4) {
-                result << 2;
-            }
+            result << 2;            
         }
     }
 

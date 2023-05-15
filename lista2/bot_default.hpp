@@ -82,7 +82,7 @@ int minmax(int board[5][5], int player, int move, int alpha, int beta) {
             }
         }
         if(!possible_move_check) return 0;
-        return -1 * best;
+        return best;
     }
 }
 
