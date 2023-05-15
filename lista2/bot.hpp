@@ -6,6 +6,7 @@
 
 int depth, bot;
 std::set<long long> set;
+
 int minmax(int board[5][5], int player, int move, int alpha, int beta);
 int value(int board[5][5], int player);
 int inertion(int board[5][5], int player);
@@ -105,7 +106,7 @@ int inertion(int board[5][5], int player) {
             }
         }
     }
-    return 200 - sum;
+    return -1 *  sum;
 }
 
 bool visited(int board[5][5]) {
