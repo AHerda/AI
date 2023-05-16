@@ -16,7 +16,7 @@ int bestMove(int player) {
             if(board[i][j] == 0) {
 
                 board[i][j] = player;
-                int temp = minmax(board, bot, 0, -100000, 100000);
+                int temp = minmax(board, 3 - bot, 1, -1000, 1000);
                 board[i][j] = 0;
 
                 if(temp > max) {
@@ -33,11 +33,11 @@ int bestMove(int player) {
 
 
 int minmax(int board[5][5], int player, int move, int alpha, int beta) {
-    if(winCheck(player)) return (player == bot) ? 1000 : -1000;
-    if(loseCheck(player)) return (player == bot) ? -1000 : 1000;
-    if(move == depth) return 0;
+    if(move >= depth) return 0;
+    else if(winCheck(player)) return (player == bot) ? 1000 : -1000;
+    else if(loseCheck(player)) return (player == bot) ? -1000 : 1000;
 
-    int best = (player == bot) ? -10000 : 10000;
+    int best = (player == bot) ? -1000 : 1000;
 
     bool possible_move_check = false;
     if(player == bot) {
@@ -59,8 +59,6 @@ int minmax(int board[5][5], int player, int move, int alpha, int beta) {
                 }
             }
         }
-        if(!possible_move_check) return 0;
-        return best;
     }
     else {
         for(int i = 0; i < 5; i++) {
@@ -81,9 +79,10 @@ int minmax(int board[5][5], int player, int move, int alpha, int beta) {
                 }
             }
         }
-        if(!possible_move_check) return 0;
-        return best;
     }
+
+    if(!possible_move_check) return 0;
+    return best;
 }
 
 int value(int board[5][5], int player) {

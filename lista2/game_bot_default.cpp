@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     setBoard(); 
     end_game = false;
     player = atoi(argv[3]);
-    depth = (argc == 4) ? 5 : atoi(argv[4]);
+    depth = (argc == 4) ? 6 : atoi(argv[4]);
 
     while( !end_game ) {
         memset(server_message, '\0', sizeof(server_message));
