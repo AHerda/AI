@@ -38,8 +38,8 @@ int minmax(int board[5][5], int player, int move, int alpha, int beta) {
     if(winCheck(3 - player)) return (3 - player == bot) ? 1000 : -1000;
     else if(loseCheck(3 - player)) return (3 - player == bot) ? -1000 : 1000;
 
-    int best = value(board, bot);
-    if(move >= depth) return best;
+    int best = value(board, 3 - player);
+    if(move >= depth) return (3 - player == bot) ? best : -best;
 
     bool possible_move_check = false;
     if(player == bot) {
@@ -99,14 +99,14 @@ int heuristic(int board[5][5], int player) {
         if(((board[win[i][0][0]][win[i][0][1]] == player) && (board[win[i][1][0]][win[i][1][1]] == 0) && (board[win[i][2][0]][win[i][2][1]] == player) && (board[win[i][3][0]][win[i][3][1]] == player))
         || ((board[win[i][0][0]][win[i][0][1]] == player) && (board[win[i][1][0]][win[i][1][1]] == player) && (board[win[i][2][0]][win[i][2][1]] == 0) && (board[win[i][3][0]][win[i][3][1]] == player)))
             result += 15;
-        else if(((board[win[i][0][0]][win[i][0][1]] == player) && (board[win[i][1][0]][win[i][1][1]] == player) && (board[win[i][2][0]][win[i][2][1]] == 0) && (board[win[i][3][0]][win[i][3][1]] == 0))
-        || ((board[win[i][0][0]][win[i][0][1]] == 0) && (board[win[i][1][0]][win[i][1][1]] == 0) && (board[win[i][2][0]][win[i][2][1]] == player) && (board[win[i][3][0]][win[i][3][1]] == player)))
-            result += 4;
+        else if(((board[win[i][0][0]][win[i][0][1]] == player) && (board[win[i][1][0]][win[i][1][1]] == 0) && (board[win[i][2][0]][win[i][2][1]] == 0) && (board[win[i][3][0]][win[i][3][1]] == player)))
+            result += 10;
         else if(((board[win[i][0][0]][win[i][0][1]] == player) && (board[win[i][1][0]][win[i][1][1]] == 0) && (board[win[i][2][0]][win[i][2][1]] == player) && (board[win[i][3][0]][win[i][3][1]] == 0))
         || ((board[win[i][0][0]][win[i][0][1]] == 0) && (board[win[i][1][0]][win[i][1][1]] == player) && (board[win[i][2][0]][win[i][2][1]] == 0) && (board[win[i][3][0]][win[i][3][1]] == player)))
             result += 7;
-        else if(((board[win[i][0][0]][win[i][0][1]] == player) && (board[win[i][1][0]][win[i][1][1]] == 0) && (board[win[i][2][0]][win[i][2][1]] == 0) && (board[win[i][3][0]][win[i][3][1]] == player)))
-            result += 10;
+        else if(((board[win[i][0][0]][win[i][0][1]] == player) && (board[win[i][1][0]][win[i][1][1]] == player) && (board[win[i][2][0]][win[i][2][1]] == 0) && (board[win[i][3][0]][win[i][3][1]] == 0))
+        || ((board[win[i][0][0]][win[i][0][1]] == 0) && (board[win[i][1][0]][win[i][1][1]] == 0) && (board[win[i][2][0]][win[i][2][1]] == player) && (board[win[i][3][0]][win[i][3][1]] == player)))
+            result += 4;
         else if(((board[win[i][0][0]][win[i][0][1]] == 0) && (board[win[i][1][0]][win[i][1][1]] == player) && (board[win[i][2][0]][win[i][2][1]] == player) && (board[win[i][3][0]][win[i][3][1]] == 0)))
             result -= 15;
     return result;
