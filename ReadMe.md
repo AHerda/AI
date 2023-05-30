@@ -6,6 +6,6 @@ Repozytorium zawierające zadania oraz programy wykonanae na kurs WSI
 Adrian Herda
 
 ## Projekty
-### * Układanka 15 oraz bot
-### * Tic-Tac-Toe 5x5 oraz bot
-### * Pierwsze sieci neuronowe
+### Układanka 15 oraz bot
+### Tic-Tac-Toe 5x5 oraz bot
+### Pierwsze sieci neuronowe
