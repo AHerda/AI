@@ -8,4 +8,5 @@ Adrian Herda
 ## Projekty
 ### Układanka 15 oraz bot
 ### Tic-Tac-Toe 5x5 oraz bot
-### Pierwsze sieci neuronowe
+### Podstawowe sieci neuronowe
+### Podstawowe lasy decyzyjne oraz DBSCAN
